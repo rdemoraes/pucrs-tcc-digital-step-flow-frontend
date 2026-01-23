@@ -9,4 +9,3 @@ data:
   SERVICE_NAME: "digital-step-flow"
   POSTGRES_HOST: "digital-step-flow-database"
   POSTGRES_DB: "digital_step_flow"
-
