@@ -32,8 +32,11 @@ export function LoginPage() {
     try {
       await login(data.email, data.password)
       navigate('/dashboard')
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.')
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err
+        ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+        : undefined
+      setError(errorMessage || 'Login failed. Please try again.')
     } finally {
       setLoading(false)
     }

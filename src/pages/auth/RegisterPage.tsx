@@ -37,8 +37,11 @@ export function RegisterPage() {
     try {
       await registerUser(data.email, data.password, data.name)
       navigate('/onboarding')
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.')
+    } catch (err: unknown) {
+      const errorMessage = err && typeof err === 'object' && 'response' in err
+        ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+        : undefined
+      setError(errorMessage || 'Registration failed. Please try again.')
     } finally {
       setLoading(false)
     }
