@@ -22,8 +22,8 @@ RUN npm run build
 ARG BASE_IMAGE_PROD=raphaelmoraes/digital-step-flow-base-node:latest
 FROM ${BASE_IMAGE_PROD}
 
-# Install nginx for serving static files
-RUN apk add --no-cache nginx
+# Install nginx and wget for healthcheck
+RUN apk add --no-cache nginx wget
 
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -44,6 +44,10 @@ USER appuser
 
 # Expose port
 EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
