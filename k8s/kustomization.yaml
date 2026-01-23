@@ -3,9 +3,9 @@ kind: Kustomization
 
 namespace: digital-step-flow
 
-# Remote base from infrastructure repository
+# Local base resources
 resources:
-  - https://github.com/raphaelmoraes/pucrs-tcc-digital-step-flow.git/k8s/base?ref=main
+  - base
   - deployment.yaml
   - service.yaml
 
@@ -15,5 +15,5 @@ commonLabels:
 images:
   - name: raphaelmoraes/digital-step-flow-frontend
     newName: raphaelmoraes/digital-step-flow-frontend
-    newTag: latest
+    newTag: 24.13.0-r1-dev
 
