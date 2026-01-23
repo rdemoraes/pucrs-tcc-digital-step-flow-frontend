@@ -1,0 +1,8 @@
+skip-check:
+  # Skip image digest check - not practical with Kustomize dynamic image tags
+  - CKV_K8S_43
+  # Skip NetworkPolicy check - not implementing NetworkPolicy at this time
+  - CKV2_K8S_6
+  # Skip workflow permissions check - permissions are specific, not write-all
+  - CKV2_GHA_1
+

@@ -7,7 +7,7 @@ metadata:
     app: digital-step-flow-frontend
     app.kubernetes.io/component: frontend
   annotations:
-    checkov.io/skip: CKV_K8S_43,CKV2_K8S_6  # CKV_K8S_43: Image digest not practical with Kustomize dynamic tags; CKV2_K8S_6: NetworkPolicy not implemented yet
+    checkov.io/skip: CKV_K8S_43:Image digest not practical with Kustomize dynamic tags;CKV2_K8S_6:NetworkPolicy not implemented yet
 spec:
   replicas: 2
   selector:
