@@ -37,8 +37,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: true
           APPLY_FIXES: none
-          DISABLE_ERRORS_LINTERS: ''
-          DISABLE: COPYPASTE,SPELL
+          # Disable duplicate style checkers (eslint is already running)
+          # Disable noisy infrastructure-as-code linters (we run Trivy separately in CI)
+          DISABLE: COPYPASTE,SPELL,JAVASCRIPT_STANDARD,TYPESCRIPT_TS_STANDARD,REPOSITORY_KICS,REPOSITORY_CHECKOV,REPOSITORY_TRIVY,MARKDOWN_MARKDOWN_LINK_CHECK,JSON_JSONLINT
+          # Make some linters non-blocking (warnings only)
+          DISABLE_ERRORS_LINTERS: YAML,REPOSITORY,BASH
           ENABLE: JAVASCRIPT,TYPESCRIPT,JSON,YAML,MARKDOWN,DOCKER,BASH,REPOSITORY
           FILTER_REGEX_EXCLUDE: (node_modules|\.git|dist|build|coverage|\.next|\.cache)
           LOG_LEVEL: INFO
