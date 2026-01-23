@@ -41,6 +41,8 @@ jobs:
           # Disable noisy infrastructure-as-code linters (we run Trivy separately in CI)
           # Disable devskim (has XML parsing errors, we have Trivy for security scanning)
           DISABLE: COPYPASTE,SPELL,JAVASCRIPT_STANDARD,TYPESCRIPT_TS_STANDARD,REPOSITORY_KICS,REPOSITORY_CHECKOV,REPOSITORY_TRIVY,REPOSITORY_DEVSKIM,MARKDOWN_MARKDOWN_LINK_CHECK,JSON_JSONLINT
+          # Explicitly disable devskim via environment variable
+          REPOSITORY_DEVSKIM_DISABLE: 'true'
           # Make some linters non-blocking (warnings only)
           DISABLE_ERRORS_LINTERS: YAML,REPOSITORY,BASH
           ENABLE: JAVASCRIPT,TYPESCRIPT,JSON,YAML,MARKDOWN,DOCKER,BASH,REPOSITORY
