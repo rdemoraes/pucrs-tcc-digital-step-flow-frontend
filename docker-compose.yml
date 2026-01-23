@@ -1,0 +1,24 @@
+version: '3.8'
+
+# Docker Compose para desenvolvimento local do Frontend
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: digital-step-flow-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080/api
+    volumes:
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
