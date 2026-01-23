@@ -1,6 +1,6 @@
 # Multi-stage build for frontend
 # Stage 1: Build
-ARG BASE_IMAGE_DEV=raphaelmoraes/digital-step-flow-base-node:latest-dev
+ARG BASE_IMAGE_DEV=raphaelmoraes/digital-step-flow-base-node:24.13.0-r1-dev
 FROM ${BASE_IMAGE_DEV} AS builder
 
 # Set working directory
@@ -19,7 +19,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-ARG BASE_IMAGE_PROD=raphaelmoraes/digital-step-flow-base-node:latest
+ARG BASE_IMAGE_PROD=raphaelmoraes/digital-step-flow-base-node:24.13.0-r1
 FROM ${BASE_IMAGE_PROD}
 
 # Install nginx and wget for healthcheck
@@ -46,8 +46,7 @@ USER appuser
 EXPOSE 3000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
