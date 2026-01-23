@@ -39,9 +39,11 @@ jobs:
           APPLY_FIXES: none
           # Only include infrastructure files
           FILTER_REGEX_INCLUDE: (k8s/|argocd/|docker-compose\.yml|Dockerfile|\.dockerignore)
-          # Enable infrastructure-focused linters (explicitly enable only needed REPOSITORY linters)
-          ENABLE: YAML,DOCKER,REPOSITORY_KICS,REPOSITORY_CHECKOV,REPOSITORY_TRIVY
-          # Disable code-focused linters and problematic repository linters
+          # Enable infrastructure-focused descriptors
+          ENABLE: YAML,DOCKER
+          # Explicitly enable only the repository linters we need
+          ENABLE_LINTERS: REPOSITORY_KICS,REPOSITORY_CHECKOV,REPOSITORY_TRIVY
+          # Disable all other linters
           DISABLE: COPYPASTE,SPELL,JAVASCRIPT,TYPESCRIPT,JSON,MARKDOWN,BASH,REPOSITORY_DEVSKIM,REPOSITORY_GITLEAKS,REPOSITORY_TRUFFLEHOG,REPOSITORY_GRYPE,REPOSITORY_SECRETLINT,REPOSITORY_DUSTILOCK,REPOSITORY_SYFT,REPOSITORY_TRIVY_SBOM,REPOSITORY_GIT_DIFF
           # Make yamllint non-blocking (warnings only)
           DISABLE_ERRORS_LINTERS: YAML
