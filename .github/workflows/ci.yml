@@ -125,6 +125,7 @@ jobs:
     name: Build Frontend Image
     runs-on: ubuntu-latest
     needs: [quality-gate-infra, quality-gate-code, lint, test]
+    # checkov:skip=CKV2_GHA_1: Permissions are specific (contents:write for tags, id-token:write for OIDC), not write-all
     permissions:
       contents: write  # Required to create tags
       id-token: write  # Required for OIDC if using Docker registry authentication

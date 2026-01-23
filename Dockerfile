@@ -1,5 +1,6 @@
 # Multi-stage build for frontend
 # Stage 1: Build
+# checkov:skip=CKV_DOCKER_7: Base image uses specific version tag (24.13.0-r1-dev) via ARG, not 'latest'
 ARG BASE_IMAGE_DEV=raphaelmoraes/digital-step-flow-base-node:24.13.0-r1-dev
 FROM ${BASE_IMAGE_DEV} AS builder
 
@@ -19,6 +20,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
+# checkov:skip=CKV_DOCKER_7: Base image uses specific version tag (24.13.0-r1) via ARG, not 'latest'
 ARG BASE_IMAGE_PROD=raphaelmoraes/digital-step-flow-base-node:24.13.0-r1
 FROM ${BASE_IMAGE_PROD}
 
