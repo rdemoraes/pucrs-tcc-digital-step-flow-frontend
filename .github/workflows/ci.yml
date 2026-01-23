@@ -127,6 +127,7 @@ jobs:
     needs: [quality-gate-infra, quality-gate-code, lint, test]
     permissions:
       contents: write  # Required to create tags
+      id-token: write  # Required for OIDC if using Docker registry authentication
     steps:
       - uses: actions/checkout@v4
         with:

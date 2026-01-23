@@ -17,6 +17,7 @@ spec:
         app: digital-step-flow-frontend
         app.kubernetes.io/component: frontend
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001

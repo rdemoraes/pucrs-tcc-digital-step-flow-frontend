@@ -6,5 +6,4 @@ namespace: digital-step-flow
 resources:
   - namespace.yaml
   - configmap.yaml
-  - secret.yaml
 
