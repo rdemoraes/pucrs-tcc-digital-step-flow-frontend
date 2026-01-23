@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0  # Full history for repository linters
       
       - name: Run MegaLinter
-        uses: oxsecurity/megalinter-action@v7
+        uses: oxsecurity/megalinter@v7
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,7 +56,6 @@ jobs:
         with:
           node-version: '24.13.0'
           cache: 'npm'
-          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
         run: npm ci
@@ -75,7 +74,6 @@ jobs:
         with:
           node-version: '24.13.0'
           cache: 'npm'
-          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
         run: npm ci
