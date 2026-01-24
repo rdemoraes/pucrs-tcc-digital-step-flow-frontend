@@ -128,6 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [quality-gate-infra, quality-gate-code, lint, test]
     # checkov:skip=CKV2_GHA_1: Permissions are specific (contents:write for tags, id-token:write for OIDC), not write-all
+    # kics-scan:skip=a88baa34-e2ad-44ea-ad6f-8cac87bc7c71: id-token: write is a GitHub Actions permission for OIDC, not a secret
     permissions:
       contents: write  # Required to create tags
       id-token: write  # Required for OIDC if using Docker registry authentication

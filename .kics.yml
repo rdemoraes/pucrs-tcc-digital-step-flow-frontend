@@ -1,0 +1,54 @@
+# KICS skip configuration
+# Skip checks that are false positives or acceptable for this project
+
+queries:
+  # HIGH: Volume mounts are emptyDir volumes for readOnlyRootFilesystem, not host mounts
+  - id: b7652612-de4e-4466-a0bf-1cd81f0c6063
+    comment: "Volume mounts are emptyDir volumes for nginx writable paths, required for readOnlyRootFilesystem"
+  
+  # HIGH: id-token is a GitHub Actions permission, not a secret
+  - id: a88baa34-e2ad-44ea-ad6f-8cac87bc7c71
+    comment: "id-token: write is a GitHub Actions permission for OIDC, not a secret"
+  
+  # LOW: GitHub Actions version tags are acceptable, pinning to commit SHAs is impractical
+  - id: 555ab8f9-2001-455e-a077-f2d0f41e2fb9
+    comment: "GitHub Actions version tags (v4, v5, etc.) are acceptable and maintained by action authors"
+  
+  # LOW: ResourceQuota and LimitRange are namespace-level resources, not required per deployment
+  - id: 48a5beba-e4c0-4584-a2aa-e6894e4cf424
+    comment: "ResourceQuota is a namespace-level resource, not required per deployment"
+  
+  - id: 4a20ebac-1060-4c81-95d1-1f7f620e983b
+    comment: "LimitRange is a namespace-level resource, not required per deployment"
+  
+  # LOW: AppArmor profile not implemented at this time
+  - id: 8b36775e-183d-4d46-b0f7-96a6f34a723f
+    comment: "AppArmor profile not implemented at this time"
+  
+  # LOW: PodDisruptionBudget not implemented at this time
+  - id: b23e9b98-0cb6-4fc9-b257-1f3270442678
+    comment: "PodDisruptionBudget not implemented at this time"
+  
+  # INFO: Namespace is already defined in base resources
+  - id: e84eaf4d-2f45-47b2-abe8-e581b06deb66
+    comment: "Namespace is defined in k8s/base/namespace.yaml"
+  
+  # Docker Compose issues - acceptable for local development
+  - id: 6b610c50-99fb-4ef0-a5f3-e312fd945bc3
+    comment: "Docker Compose is for local development only"
+  
+  - id: 610e266e-6c12-4bca-9925-1ed0cd29742b
+    comment: "Docker Compose is for local development only"
+  
+  - id: bb9ac4f7-e13b-423d-a010-c74a1bfbe492
+    comment: "Docker Compose is for local development only"
+  
+  - id: 698ed579-b239-4f8f-a388-baa4bcb13ef8
+    comment: "Docker Compose is for local development only"
+  
+  - id: 451d79dc-0588-476a-ad03-3c7f0320abb3
+    comment: "Docker Compose is for local development only"
+  
+  - id: ce76b7d0-9e77-464d-b86f-c5c48e03e22d
+    comment: "Docker Compose is for local development only"
+

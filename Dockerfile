@@ -24,8 +24,8 @@ RUN npm run build
 ARG BASE_IMAGE_PROD=raphaelmoraes/digital-step-flow-base-node:24.13.0-r1
 FROM ${BASE_IMAGE_PROD}
 
-# Install nginx and wget for healthcheck
-RUN apk add --no-cache nginx wget
+# Install nginx and wget for healthcheck (pinned versions for security)
+RUN apk add --no-cache nginx=1.28.0-r9 wget=1.21.4-r4
 
 # Copy built files from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
