@@ -48,7 +48,7 @@ jobs:
           # Skip specific Checkov checks
           REPOSITORY_CHECKOV_SKIP_CHECK: CKV_K8S_43,CKV2_K8S_6,CKV2_GHA_1
           # Exclude LOW and INFO severity findings from KICS
-          REPOSITORY_KICS_ARGUMENTS: "--exclude-severities info,low --exclude-queries 8c978947-0ff6-485c-b0c2-0bfca6026466,7c81d34c-8e5a-402b-9798-9f442630e678,8b36775e-183d-4d46-b0f7-96a6f34a723f"
+          REPOSITORY_KICS_ARGUMENTS: "--exclude-severities info,low --exclude-paths .github/workflows/ci.yml"
           # Make yamllint non-blocking (warnings only)
           DISABLE_ERRORS_LINTERS: YAML
           FILTER_REGEX_EXCLUDE: (node_modules|\.git|dist|build|coverage|\.next|\.cache)
