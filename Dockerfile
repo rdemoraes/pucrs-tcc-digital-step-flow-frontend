@@ -36,5 +36,8 @@ USER appuser
 # Expose port (for healthcheck, but nginx sidecar will serve on 3000)
 EXPOSE 3000
 
+# Healthcheck - verify container is running (nginx sidecar handles HTTP healthchecks)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD pgrep -f "sleep infinity" || exit 1
+
 # Keep container running (nginx sidecar will serve the files)
 CMD ["sleep", "infinity"]
