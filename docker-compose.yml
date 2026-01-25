@@ -1,9 +1,7 @@
 version: '3.8'
 
 # Docker Compose para desenvolvimento local do Frontend
-# Uses nginx as sidecar pattern
 services:
-  # Frontend container - copies static files to shared volume
   frontend:
     build:
       context: .
@@ -11,43 +9,11 @@ services:
     container_name: digital-step-flow-frontend
     environment:
       - VITE_API_BASE_URL=http://localhost:8080/api
-    volumes:
-      - ./src:/app/src:ro
-      - ./public:/app/public:ro
-      - static-files:/shared
-    command: sh -c "cp -r /usr/share/nginx/html/* /shared/ && sleep infinity"
-    networks:
-      - app-network
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 256M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
-    security_opt:
-      - no-new-privileges:true
-      - apparmor:unconfined
-    cap_drop:
-      - ALL
-    # Healthcheck not needed - container just copies files and sleeps, nginx sidecar handles HTTP healthchecks
-    healthcheck:
-      test: ["CMD", "pgrep", "-f", "sleep infinity"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
-  
-  # Nginx sidecar - serves static files
-  nginx:
-    image: nginx:1.28.0-alpine
-    container_name: digital-step-flow-frontend-nginx
     ports:
       - "127.0.0.1:3000:3000"  # Bind to localhost only
     volumes:
-      - static-files:/usr/share/nginx/html:ro
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx-cache:/var/cache/nginx
       - nginx-logs:/var/log/nginx
@@ -56,16 +22,14 @@ services:
     networks:
       - app-network
     restart: unless-stopped
-    depends_on:
-      - frontend
     deploy:
       resources:
         limits:
-          cpus: '0.25'
-          memory: 256M
+          cpus: '0.5'
+          memory: 512M
         reservations:
-          cpus: '0.05'
-          memory: 64M
+          cpus: '0.1'
+          memory: 128M
     security_opt:
       - no-new-privileges:true
       - apparmor:unconfined
@@ -73,14 +37,13 @@ services:
       - ALL
     # No cap_add needed - nginx on port 3000 (>1024) doesn't require NET_BIND_SERVICE
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
       interval: 30s
       timeout: 3s
       retries: 3
       start_period: 5s
 
 volumes:
-  static-files:
   nginx-cache:
   nginx-logs:
   nginx-run:
