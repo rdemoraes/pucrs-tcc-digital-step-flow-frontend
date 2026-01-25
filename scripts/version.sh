@@ -9,9 +9,6 @@ readonly YELLOW='\033[1;33m'
 readonly BLUE='\033[0;34m'
 readonly NC='\033[0m' # No Color
 
-# Script directory
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Logging functions
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $*" >&2
@@ -156,7 +153,8 @@ main() {
         
         # Ensure GITHUB_OUTPUT exists
         if [[ -z "${GITHUB_OUTPUT:-}" ]]; then
-            export GITHUB_OUTPUT=$(mktemp)
+            GITHUB_OUTPUT=$(mktemp)
+            export GITHUB_OUTPUT
             log_warn "GITHUB_OUTPUT not set, using temporary file: ${GITHUB_OUTPUT}"
         fi
         
