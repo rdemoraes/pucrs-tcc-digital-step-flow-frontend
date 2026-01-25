@@ -169,4 +169,3 @@ main() {
 
 # Run main if script is executed directly
 main "$@"
-
