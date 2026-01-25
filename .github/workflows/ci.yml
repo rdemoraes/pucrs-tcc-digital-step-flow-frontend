@@ -49,8 +49,13 @@ jobs:
           REPOSITORY_CHECKOV_SKIP_CHECK: CKV_K8S_43,CKV2_K8S_6,CKV2_GHA_1
           # Exclude INFO severity from KICS
           REPOSITORY_KICS_EXCLUDE_SEVERITIES: INFO
-          # Use KICS config file for skip rules
-          REPOSITORY_KICS_CONFIG_FILE: .kics.yml
+          # Exclude specific KICS queries (false positives or acceptable for this project)
+          # b7652612: Volume mounts are emptyDir volumes, not host mounts
+          # a88baa34: id-token is a GitHub Actions permission, not a secret
+          # 8c978947: Shared volumes in docker-compose are for local development only
+          # 7c81d34c: Nginx image uses pinned version tag, digest not practical
+          # 8b36775e: AppArmor profile not implemented at this time
+          REPOSITORY_KICS_EXCLUDE_QUERIES: b7652612-de4e-4466-a0bf-1cd81f0c6063,a88baa34-e2ad-44ea-ad6f-8cac87bc7c71,8c978947-0ff6-485c-b0c2-0bfca6026466,7c81d34c-8e5a-402b-9798-9f442630e678,8b36775e-183d-4d46-b0f7-96a6f34a723f
           # Make yamllint non-blocking (warnings only)
           DISABLE_ERRORS_LINTERS: YAML
           FILTER_REGEX_EXCLUDE: (node_modules|\.git|dist|build|coverage|\.next|\.cache)
