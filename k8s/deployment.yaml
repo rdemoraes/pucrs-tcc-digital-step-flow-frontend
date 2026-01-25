@@ -74,6 +74,13 @@ spec:
         ports:
         - containerPort: 3000
           name: http
+          protocol: TCP
+        - containerPort: 3001
+          name: health
+          protocol: TCP
+        - containerPort: 3002
+          name: metrics
+          protocol: TCP
         volumeMounts:
         - name: static-files
           mountPath: /usr/share/nginx/html
@@ -97,22 +104,36 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
+        startupProbe:
+          httpGet:
+            path: /health
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
+          successThreshold: 1
         livenessProbe:
           httpGet:
-            path: /
-            port: 3000
+            path: /health
+            port: health
+            scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
+          successThreshold: 1
         readinessProbe:
           httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 10
+            path: /health
+            port: health
+            scheme: HTTP
+          initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
+          successThreshold: 1
       volumes:
       - name: static-files
         emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
