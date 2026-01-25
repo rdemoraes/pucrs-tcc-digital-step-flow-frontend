@@ -1,9 +1,8 @@
 # Multi-stage build for frontend
 # Stage 1: Build
 # checkov:skip=CKV_DOCKER_7: Base image uses specific version tag (24.13.0-r1-dev) via ARG, not 'latest'
-ARG BASE_IMAGE_DEV=raphaelmoraes/digital-step-flow-base-node
 ARG NODEJS_VERSION=24.13.0-r1
-FROM ${BASE_IMAGE_DEV}:${NODEJS_VERSION}-dev AS builder
+FROM raphaelmoraes/digital-step-flow-base-node:${NODEJS_VERSION}-dev AS builder
 
 # Set working directory
 WORKDIR /app
@@ -22,9 +21,8 @@ RUN npm run build
 
 # Stage 2: Production - Frontend with Nginx
 # checkov:skip=CKV_DOCKER_7: Base image uses specific version tag (24.13.0-r1) via ARG, not 'latest'
-ARG BASE_IMAGE_PROD=raphaelmoraes/digital-step-flow-base-node
 ARG NODEJS_VERSION=24.13.0-r1
-FROM ${BASE_IMAGE_PROD}:${NODEJS_VERSION}
+FROM raphaelmoraes/digital-step-flow-base-node:${NODEJS_VERSION}
 
 # Install nginx and wget for healthcheck
 RUN apk add --no-cache nginx=1.28.0-r9 wget=1.21.4-r4

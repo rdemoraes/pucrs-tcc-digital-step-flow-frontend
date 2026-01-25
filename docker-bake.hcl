@@ -42,9 +42,7 @@ target "_common_app" {
 target "frontend" {
   inherits = ["_common_app"]
   args = {
-    BASE_IMAGE_DEV = "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node"
     NODEJS_VERSION = NODEJS_VERSION
-    BASE_IMAGE_PROD = "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node"
   }
   tags = [
     "${DOCKER_HUB_USERNAME}/digital-step-flow-frontend:${FRONTEND_IMAGE_VERSION}",
