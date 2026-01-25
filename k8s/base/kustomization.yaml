@@ -7,9 +7,8 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - nginx-configmap.yaml
-  - resourcequota.yaml
-  - limitrange.yaml
   - deployment.yaml
   - service.yaml
   - poddisruptionbudget.yaml
+  - servicemonitor.yaml
 
