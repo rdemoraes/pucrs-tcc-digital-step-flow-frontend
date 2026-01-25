@@ -59,12 +59,6 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
           readOnly: true
-        - name: nginx-cache
-          mountPath: /var/cache/nginx
-        - name: nginx-logs
-          mountPath: /var/log/nginx
-        - name: nginx-run
-          mountPath: /var/run
         - name: tmp
           mountPath: /tmp
         resources:
@@ -108,12 +102,6 @@ spec:
       - name: nginx-config
         configMap:
           name: nginx-config
-      - name: nginx-cache
-        emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
-      - name: nginx-logs
-        emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
-      - name: nginx-run
-        emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
       - name: tmp
         emptyDir: {}
 

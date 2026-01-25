@@ -33,9 +33,9 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Create directories for nginx runtime files
-RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run /tmp && \
-    chown -R appuser:appuser /usr/share/nginx/html /var/cache/nginx /var/log/nginx /var/run /tmp
+# Create /tmp directory for nginx PID file (logs go to stdout/stderr)
+RUN mkdir -p /tmp && \
+    chown -R appuser:appuser /usr/share/nginx/html /tmp
 
 # Switch to non-root user
 USER appuser
