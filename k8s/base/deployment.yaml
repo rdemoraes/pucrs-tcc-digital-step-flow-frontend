@@ -32,7 +32,8 @@ spec:
       containers:
       - name: frontend
         # checkov:skip=CKV_K8S_43: Image digest not practical with Kustomize dynamic image tags
-        image: raphaelmoraes/digital-step-flow-frontend:0.0.1
+        # Image tag will be overridden by dev/prod overlays
+        image: raphaelmoraes/digital-step-flow-frontend:latest
         imagePullPolicy: Always
         securityContext:
           allowPrivilegeEscalation: false
