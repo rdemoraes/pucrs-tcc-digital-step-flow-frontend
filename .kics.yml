@@ -37,6 +37,10 @@ queries:
   - id: e84eaf4d-2f45-47b2-abe8-e581b06deb66
     comment: "Namespace is defined in k8s/base/namespace.yaml"
   
+  # MEDIUM: Docker Compose capabilities - cap_drop: ALL is set, no additional capabilities needed
+  - id: ce76b7d0-9e77-464d-b86f-c5c48e03e22d
+    comment: "cap_drop: ALL is set, no additional capabilities needed for nginx on port 3000"
+  
   # Docker Compose issues - acceptable for local development
   - id: 6b610c50-99fb-4ef0-a5f3-e312fd945bc3
     comment: "Docker Compose is for local development only"
