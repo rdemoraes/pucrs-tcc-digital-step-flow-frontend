@@ -184,8 +184,6 @@ jobs:
           push: true
           set: |
             frontend.args.BASE_IMAGE_VERSION=${{ steps.base_version.outputs.base_version }}
-            frontend.args.BASE_IMAGE_PROD=${{ env.BASE_IMAGE }}:${{ steps.base_version.outputs.base_version }}
-            frontend.args.BASE_IMAGE_DEV=${{ env.BASE_IMAGE }}:${{ steps.base_version.outputs.base_version }}-dev
             frontend.args.FRONTEND_IMAGE_VERSION=${{ steps.version.outputs.version }}
             frontend.tags=${{ env.FRONTEND_IMAGE }}:${{ steps.version.outputs.version }}
       
