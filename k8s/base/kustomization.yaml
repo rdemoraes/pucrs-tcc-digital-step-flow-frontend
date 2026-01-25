@@ -6,4 +6,6 @@ namespace: digital-step-flow
 resources:
   - namespace.yaml
   - configmap.yaml
+  - resourcequota.yaml
+  - limitrange.yaml
 

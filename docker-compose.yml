@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: digital-step-flow-frontend
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"  # Bind to localhost only
     environment:
       - VITE_API_BASE_URL=http://localhost:8080/api
     volumes:
@@ -17,6 +17,27 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    security_opt:
+      - no-new-privileges:true
+      - apparmor:unconfined
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 
 networks:
   app-network:

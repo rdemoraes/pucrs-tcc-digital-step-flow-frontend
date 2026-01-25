@@ -18,6 +18,8 @@ spec:
       labels:
         app: digital-step-flow-frontend
         app.kubernetes.io/component: frontend
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/frontend: runtime/default
     spec:
       automountServiceAccountToken: false
       securityContext:
