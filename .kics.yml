@@ -41,9 +41,9 @@ queries:
   - id: ce76b7d0-9e77-464d-b86f-c5c48e03e22d
     comment: "cap_drop: ALL is set, no additional capabilities needed for nginx on port 3000"
   
-  # INFO: Shared volumes between containers are intentional for sidecar pattern
+  # INFO: Shared volumes between containers - Docker Compose is for local development only
   - id: 8c978947-0ff6-485c-b0c2-0bfca6026466
-    comment: "Shared volumes are intentional for sidecar pattern (frontend -> nginx)"
+    comment: "Docker Compose is for local development only - shared volumes are intentional for sidecar pattern"
   
   # LOW: Nginx image digest - using pinned version tag (1.28.0-alpine) is acceptable
   - id: 7c81d34c-8e5a-402b-9798-9f442630e678
