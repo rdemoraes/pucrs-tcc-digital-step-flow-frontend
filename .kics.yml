@@ -3,7 +3,8 @@
 
 # Exclude INFO severity findings
 exclude-severities:
-  - INFO
+  - info
+  - low
 
 queries:
   # HIGH: Volume mounts are emptyDir volumes for readOnlyRootFilesystem, not host mounts
