@@ -146,7 +146,13 @@ main() {
 		local pr_head_ref="${GITHUB_EVENT_PULL_REQUEST_HEAD_REF:-}"
 		local ref_name="${GITHUB_REF_NAME:-}"
 
+		# If running outside GitHub Actions (e.g., during linting), exit gracefully
 		if [[ -z "$ref_type" ]] || [[ -z "$ref" ]]; then
+			if [[ -z "${GITHUB_ACTIONS:-}" ]]; then
+				# Not in GitHub Actions - likely being linted, exit gracefully
+				log_warn "GITHUB_REF_TYPE and GITHUB_REF not set (not in GitHub Actions context)"
+				return 0
+			fi
 			log_error "GITHUB_REF_TYPE and GITHUB_REF must be set"
 			exit 1
 		fi
