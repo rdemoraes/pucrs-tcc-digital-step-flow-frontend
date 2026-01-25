@@ -30,6 +30,11 @@ function "minor" {
   result = length(split(".", version)) >= 2 ? join(".", slice(split(".", version), 0, 2)) : version
 }
 
+function "base_image_version" {
+  params = [version, fallback]
+  result = version != "" ? version : fallback
+}
+
 group "default" {
   targets = [
     "frontend"
@@ -49,8 +54,8 @@ target "_common_app" {
 target "frontend" {
   inherits = ["_common_app"]
   args = {
-    BASE_IMAGE_PROD = BASE_IMAGE_VERSION != "" ? "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node:${BASE_IMAGE_VERSION}" : "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node:${NODEJS_VERSION}"
-    BASE_IMAGE_DEV = BASE_IMAGE_VERSION != "" ? "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node:${BASE_IMAGE_VERSION}-dev" : "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node:${NODEJS_VERSION}-dev"
+    BASE_IMAGE_PROD = "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node:${base_image_version(BASE_IMAGE_VERSION, NODEJS_VERSION)}"
+    BASE_IMAGE_DEV = "${DOCKER_HUB_USERNAME}/digital-step-flow-base-node:${base_image_version(BASE_IMAGE_VERSION, NODEJS_VERSION)}-dev"
   }
   tags = [
     "${DOCKER_HUB_USERNAME}/digital-step-flow-frontend:${FRONTEND_IMAGE_VERSION}",
