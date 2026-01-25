@@ -115,16 +115,16 @@ spec:
           failureThreshold: 3
       volumes:
       - name: static-files
-        emptyDir: {}
+        emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
       - name: nginx-config
         configMap:
           name: nginx-config
       - name: nginx-cache
-        emptyDir: {}
+        emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
       - name: nginx-logs
-        emptyDir: {}
+        emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
       - name: nginx-run
-        emptyDir: {}
+        emptyDir: {}  # kics-scan:skip=b7652612-de4e-4466-a0bf-1cd81f0c6063: emptyDir volume, not a host mount
       - name: tmp
         emptyDir: {}
 
