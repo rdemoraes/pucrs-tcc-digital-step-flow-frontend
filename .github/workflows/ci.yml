@@ -47,8 +47,8 @@ jobs:
           DISABLE: COPYPASTE,SPELL,JAVASCRIPT,TYPESCRIPT,JSON,MARKDOWN,BASH,REPOSITORY_DEVSKIM,REPOSITORY_GITLEAKS,REPOSITORY_TRUFFLEHOG,REPOSITORY_GRYPE,REPOSITORY_SECRETLINT,REPOSITORY_DUSTILOCK,REPOSITORY_SYFT,REPOSITORY_TRIVY_SBOM,REPOSITORY_GIT_DIFF
           # Skip specific Checkov checks
           REPOSITORY_CHECKOV_SKIP_CHECK: CKV_K8S_43,CKV2_K8S_6,CKV2_GHA_1
-          # Exclude INFO severity from KICS
-          REPOSITORY_KICS_EXCLUDE_SEVERITIES: INFO
+          # Exclude LOW and INFO severity findings from KICS
+          REPOSITORY_KICS_ARGUMENTS: "--exclude-severities info,low"
           # Exclude specific KICS queries via CLI arguments (LOW severity only - HIGH severity items are addressed with inline comments)
           # 8c978947: Shared volumes in docker-compose are for local development only
           # 7c81d34c: Nginx image uses pinned version tag, digest not practical
