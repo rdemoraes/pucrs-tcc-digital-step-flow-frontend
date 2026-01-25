@@ -59,7 +59,6 @@ spec:
       containers:
       # Nginx sidecar - serves static files from shared volume
       - name: nginx
-        # kics-scan ignore-line
         image: nginx:1.28.0-alpine
         imagePullPolicy: Always
         securityContext:

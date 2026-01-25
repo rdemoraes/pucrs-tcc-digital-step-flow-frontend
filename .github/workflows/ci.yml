@@ -49,6 +49,8 @@ jobs:
           REPOSITORY_CHECKOV_SKIP_CHECK: CKV_K8S_43,CKV2_K8S_6,CKV2_GHA_1
           # Exclude INFO severity from KICS
           REPOSITORY_KICS_EXCLUDE_SEVERITIES: INFO
+          # Use KICS config file for skip rules
+          REPOSITORY_KICS_CONFIG_FILE: .kics.yml
           # Make yamllint non-blocking (warnings only)
           DISABLE_ERRORS_LINTERS: YAML
           FILTER_REGEX_EXCLUDE: (node_modules|\.git|dist|build|coverage|\.next|\.cache)

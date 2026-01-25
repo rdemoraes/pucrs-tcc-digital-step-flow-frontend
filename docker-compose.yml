@@ -32,6 +32,13 @@ services:
       - apparmor:unconfined
     cap_drop:
       - ALL
+    # Healthcheck not needed - container just copies files and sleeps, nginx sidecar handles HTTP healthchecks
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "sleep infinity"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
   
   # Nginx sidecar - serves static files
   nginx:
