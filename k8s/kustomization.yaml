@@ -5,16 +5,18 @@ namespace: digital-step-flow
 
 # Local base resources
 resources:
-  - base
-  - deployment.yaml
-  - service.yaml
-  - poddisruptionbudget.yaml
+- base
+- deployment.yaml
+- service.yaml
+- poddisruptionbudget.yaml
 
 commonLabels:
   app.kubernetes.io/component: frontend
 
 images:
-  - name: raphaelmoraes/digital-step-flow-frontend
-    newName: raphaelmoraes/digital-step-flow-frontend
-    newTag: 24.13.0-r1-dev
-
+- name: frontend
+  newName: raphaelmoraes/digital-step-flow-frontend
+  newTag: 0.0.1
+- name: raphaelmoraes/digital-step-flow-frontend
+  newName: raphaelmoraes/digital-step-flow-frontend
+  newTag: 24.13.0-r1-dev
