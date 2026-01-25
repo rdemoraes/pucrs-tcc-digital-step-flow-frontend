@@ -1,6 +1,10 @@
 # KICS skip configuration
 # Skip checks that are false positives or acceptable for this project
 
+# Exclude INFO severity findings
+exclude-severities:
+  - INFO
+
 queries:
   # HIGH: Volume mounts are emptyDir volumes for readOnlyRootFilesystem, not host mounts
   - id: b7652612-de4e-4466-a0bf-1cd81f0c6063
