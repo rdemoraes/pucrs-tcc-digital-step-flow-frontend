@@ -23,14 +23,13 @@ env:
   REGISTRY: docker.io
   DOCKER_HUB_USERNAME: raphaelmoraes
   FRONTEND_IMAGE: raphaelmoraes/digital-step-flow-frontend
-  CICD_RUNNER_IMAGE: raphaelmoraes/digital-step-flow-cicd-runner
 
 jobs:
   k8s-set-deploy-image-dev:
     name: Update Kubernetes Manifests - Dev
     runs-on: ubuntu-latest
     container:
-      image: $REGISTRY/$CICD_RUNNER_IMAGE:0.0.1
+      image: raphaelmoraes/digital-step-flow-cicd-runner:0.0.1
     permissions:
       contents: write  # Required to push commits
     steps:
