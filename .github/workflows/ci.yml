@@ -414,12 +414,7 @@ jobs:
       - name: Determine production branch
         id: prod_branch
         run: |
-          if [ "${{ github.ref }}" == "refs/heads/main" ] || [ "${{ github.ref }}" == "refs/heads/master" ]; then
-            PROD_BRANCH="${{ github.ref_name }}"
-          else
-            # Default to main if triggered from develop
-            PROD_BRANCH="main"
-          fi
+          PROD_BRANCH="production"
           echo "branch=${PROD_BRANCH}" >> $GITHUB_OUTPUT
           echo "Production branch: ${PROD_BRANCH}"
       
