@@ -23,7 +23,7 @@ jobs:
     name: Update Kubernetes Manifests - Prod
     runs-on: ubuntu-latest
     container:
-      image: $REGISTRY/$CICD_RUNNER_IMAGE:0.0.1
+      image: ${REGISTRY}/${CICD_RUNNER_IMAGE}:0.0.1
     permissions:
       contents: write  # Required to push commits
     steps:
