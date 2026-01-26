@@ -18,8 +18,8 @@ env:
   DOCKER_HUB_USERNAME: raphaelmoraes
   BASE_IMAGE: raphaelmoraes/digital-step-flow-base-node
   FRONTEND_IMAGE: raphaelmoraes/digital-step-flow-frontend
-  NODEJS_VERSION: 24.13.0-r1
-  NPM_VERSION: 11.6.3-r1
+  NODEJS_VERSION: '24.13.0'
+  NPM_VERSION: '11.6.3'
 
 jobs:
   lint:
