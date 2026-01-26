@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: raphaelmoraes/digital-step-flow-cicd-runner:0.0.1
+      options: --user root
     permissions:
       contents: write  # Required to push commits
     steps:
@@ -30,6 +31,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
       
       - name: Determine version based on branch strategy
         id: version

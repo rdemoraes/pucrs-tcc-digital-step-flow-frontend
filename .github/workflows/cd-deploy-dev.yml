@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: raphaelmoraes/digital-step-flow-cicd-runner:0.0.1
+      options: --user root
     permissions:
       contents: write  # Required to push commits
     steps:
@@ -31,6 +32,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
       
       - name: Determine version based on branch strategy
         id: version
@@ -106,7 +108,8 @@ jobs:
     name: Update Kubernetes Manifests - Prod
     runs-on: ubuntu-latest
     container:
-      image: $REGISTRY/$CICD_RUNNER_IMAGE:0.0.1
+      image: raphaelmoraes/digital-step-flow-cicd-runner:0.0.1
+      options: --user root
     needs: [k8s-set-deploy-image-dev]
     permissions:
       contents: write  # Required to push commits
@@ -115,6 +118,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
       
       - name: Determine version based on branch strategy
         id: version
