@@ -320,19 +320,29 @@ jobs:
             "$GITHUB_EVENT_PULL_REQUEST_HEAD_REF" \
             "$GITHUB_REF_NAME"
       
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Clone k8s repository
+        run: |
+          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/pucrs-tcc-digital-step-flow-frontend-k8s.git k8s-repo
+      
+      - name: Setup k8s repository for dev
+        working-directory: ./k8s-repo
+        run: |
+          git fetch --tags
+          git checkout develop
+      
       - name: Install Kustomize
         run: |
           curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
           sudo mv kustomize /usr/local/bin/
           kustomize version
       
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
       - name: Update frontend image in kustomization
-        working-directory: ./k8s/dev
+        working-directory: ./k8s-repo/k8s/dev
         run: |
           # Extract current image from kustomization.yaml
           OLD_IMAGE=$(grep "newTag:" kustomization.yaml | head -1 | sed 's/.*newTag: *//' | tr -d '"' || echo "")
@@ -344,6 +354,7 @@ jobs:
       
       - name: Check for changes
         id: changes
+        working-directory: ./k8s-repo
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -356,10 +367,11 @@ jobs:
       
       - name: Commit and push changes
         if: steps.changes.outputs.has_changes == 'true'
+        working-directory: ./k8s-repo
         run: |
           git add k8s/dev/kustomization.yaml
           git commit -m "chore: update dev image tag to ${{ steps.version.outputs.version }} [skip ci]"
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin develop
 
   k8s-set-deploy-image-prod:
     name: Update Kubernetes Manifests - Prod
@@ -394,19 +406,41 @@ jobs:
             "$GITHUB_EVENT_PULL_REQUEST_HEAD_REF" \
             "$GITHUB_REF_NAME"
       
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Determine production branch
+        id: prod_branch
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ] || [ "${{ github.ref }}" == "refs/heads/master" ]; then
+            PROD_BRANCH="${{ github.ref_name }}"
+          else
+            # Default to main if triggered from develop
+            PROD_BRANCH="main"
+          fi
+          echo "branch=${PROD_BRANCH}" >> $GITHUB_OUTPUT
+          echo "Production branch: ${PROD_BRANCH}"
+      
+      - name: Clone k8s repository
+        run: |
+          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/pucrs-tcc-digital-step-flow-frontend-k8s.git k8s-repo
+      
+      - name: Setup k8s repository for prod
+        working-directory: ./k8s-repo
+        run: |
+          git fetch --tags
+          git checkout ${{ steps.prod_branch.outputs.branch }}
+      
       - name: Install Kustomize
         run: |
           curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
           sudo mv kustomize /usr/local/bin/
           kustomize version
       
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
       - name: Update frontend image in kustomization
-        working-directory: ./k8s/prod
+        working-directory: ./k8s-repo/k8s/prod
         run: |
           # Extract current image from kustomization.yaml
           OLD_IMAGE=$(grep "newTag:" kustomization.yaml | head -1 | sed 's/.*newTag: *//' | tr -d '"' || echo "")
@@ -418,6 +452,7 @@ jobs:
       
       - name: Check for changes
         id: changes
+        working-directory: ./k8s-repo
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -430,8 +465,9 @@ jobs:
       
       - name: Commit and push changes
         if: steps.changes.outputs.has_changes == 'true'
+        working-directory: ./k8s-repo
         run: |
           git add k8s/prod/kustomization.yaml
           git commit -m "chore: update prod image tag to ${{ steps.version.outputs.version }} [skip ci]"
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin ${{ steps.prod_branch.outputs.branch }}
 
