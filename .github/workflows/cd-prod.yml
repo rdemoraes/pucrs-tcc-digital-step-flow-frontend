@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: $REGISTRY/$CICD_RUNNER_IMAGE:0.0.1
-    needs: [k8s-set-deploy-image-dev]
     permissions:
       contents: write  # Required to push commits
     steps:
