@@ -292,8 +292,8 @@ jobs:
   k8s-set-deploy-image-dev:
     name: Update Kubernetes Manifests - Dev
     runs-on: ubuntu-latest
-    # Only run on push to develop (after PR merge), not on PRs or tags
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.ref_type == 'branch'
+    # Run on push to develop (after PR merge) or manual workflow_dispatch on develop
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.ref_type == 'branch') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/develop')
     needs: [build]
     permissions:
       contents: write  # Required to push commits
