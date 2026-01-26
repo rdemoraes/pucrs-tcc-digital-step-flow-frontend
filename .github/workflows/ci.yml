@@ -291,10 +291,8 @@ jobs:
 
   k8s-set-deploy-image-dev:
     name: Update Kubernetes Manifests - Dev
-    runs-on: ubuntu-latest
-    # Run on push to develop (after PR merge) or manual workflow_dispatch on develop
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.ref_type == 'branch') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/develop')
-    needs: [build]
+    runs-on: raphaelmoraes/digital-step-flow-cicd-runner:0.0.1
+    needs: [quality-gate-infra, quality-gate-code, build]
     permissions:
       contents: write  # Required to push commits
     steps:
@@ -337,8 +335,8 @@ jobs:
       
       - name: Install Kustomize
         run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
-          sudo mv kustomize /usr/local/bin/
+          # curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          # sudo mv kustomize /usr/local/bin/
           kustomize version
       
       - name: Update frontend image in kustomization
