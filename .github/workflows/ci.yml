@@ -94,7 +94,7 @@ jobs:
           SHOW_ELAPSED_TIME: true
 
   quality-gate-infra:
-    name: Quality Gate - Infrastructure (K8s, ArgoCD)
+    name: Quality Gate - Infra
     runs-on: ubuntu-latest
     needs: [lint, test, quality-gate-code]
     steps:
