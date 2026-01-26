@@ -13,8 +13,8 @@ describe('formatters', () => {
     })
 
     it('should handle null/undefined gracefully', () => {
-      expect(formatEmail(null as any)).toBe('')
-      expect(formatEmail(undefined as any)).toBe('')
+      expect(formatEmail(null as unknown as string)).toBe('')
+      expect(formatEmail(undefined as unknown as string)).toBe('')
     })
   })
 
@@ -34,8 +34,8 @@ describe('formatters', () => {
 
     it('should return false for empty input', () => {
       expect(isValidEmail('')).toBe(false)
-      expect(isValidEmail(null as any)).toBe(false)
-      expect(isValidEmail(undefined as any)).toBe(false)
+      expect(isValidEmail(null as unknown as string)).toBe(false)
+      expect(isValidEmail(undefined as unknown as string)).toBe(false)
     })
 
     it('should handle whitespace', () => {
@@ -64,8 +64,8 @@ describe('formatters', () => {
 
     it('should return empty string for empty input', () => {
       expect(formatName('')).toBe('')
-      expect(formatName(null as any)).toBe('')
-      expect(formatName(undefined as any)).toBe('')
+      expect(formatName(null as unknown as string)).toBe('')
+      expect(formatName(undefined as unknown as string)).toBe('')
     })
   })
 })
