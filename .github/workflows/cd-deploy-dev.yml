@@ -1,12 +1,6 @@
 name: CD Pipeline - Deploy DEV
 
 on:
-  push:
-    branches: [ develop ]
-    tags:
-      - 'v*.*.*'  # Semantic versioning tags: v1.0.0, v1.2.3, etc.
-  pull_request:
-    branches: [ develop ]
   workflow_dispatch:  # Allow manual triggering
   workflow_run:
     workflows: ["CI Pipeline - Build"]
