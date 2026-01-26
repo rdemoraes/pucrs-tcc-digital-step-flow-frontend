@@ -3,8 +3,8 @@
  * @param email - The email address to format
  * @returns The formatted email address
  */
-export function formatEmail(email: string): string {
-  if (!email) {
+export function formatEmail (email: string): string {
+  if (email === '' || email === null || email === undefined) {
     return ''
   }
   return email.trim().toLowerCase()
@@ -15,8 +15,8 @@ export function formatEmail(email: string): string {
  * @param email - The email address to validate
  * @returns True if the email is valid, false otherwise
  */
-export function isValidEmail(email: string): boolean {
-  if (!email) {
+export function isValidEmail (email: string): boolean {
+  if (email === '' || email === null || email === undefined) {
     return false
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -28,8 +28,8 @@ export function isValidEmail(email: string): boolean {
  * @param name - The name to format
  * @returns The formatted name
  */
-export function formatName(name: string): string {
-  if (!name) {
+export function formatName (name: string): string {
+  if (name === '' || name === null || name === undefined) {
     return ''
   }
   return name
