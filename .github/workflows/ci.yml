@@ -440,3 +440,10 @@ jobs:
             trivy-image-frontend.xml
             trivy-image-frontend-sbom.json
           retention-days: 30
+
+  k8s-set-deploy-image-dev:
+    name: CD Pipeline - Deploy DEV
+    needs: [build, trivy-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/cd-deploy-dev.yml
