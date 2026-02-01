@@ -13,7 +13,69 @@ Frontend React da plataforma Digital Step Flow.
 
 ## Desenvolvimento Local
 
-Para **desenvolvimento com Docker Compose** (backend + frontend + Postgres + Redis + Prometheus, Grafana, Loki, Tempo), use o compose do repositório do **backend**: clone este repo ao lado do backend e execute `docker compose up -d` no backend. Detalhes em [Backend – Desenvolvimento Local](https://github.com/raphaelmoraes/pucrs-tcc-digital-step-flow-backend/blob/main/docs/local-development.md) e em [docs/local-development.md](./docs/local-development.md).
+### Docker Compose (backend + frontend + Postgres + Redis + observabilidade)
+
+O Docker Compose fica no repositório do **backend** e sobe backend, frontend, Postgres, Redis, Prometheus, Grafana, Loki e Tempo.
+
+**Pré-requisitos:** Docker e Docker Compose instalados. Ter os dois repositórios (backend e frontend) clonados.
+
+**1. Estrutura de pastas**
+
+Clone o **frontend** ao lado do **backend** (mesmo diretório pai):
+
+```bash
+# Exemplo: backend em ~/git/pucrs-tcc-digital-step-flow-backend
+cd ~/git
+git clone <url-do-repo-frontend> pucrs-tcc-digital-step-flow-frontend
+# Resultado:
+# ~/git/pucrs-tcc-digital-step-flow-backend/
+# ~/git/pucrs-tcc-digital-step-flow-frontend/
+```
+
+**2. Subir a stack completa**
+
+No repositório do **backend** (não no frontend):
+
+```bash
+cd pucrs-tcc-digital-step-flow-backend
+cp env.example .env   # opcional
+docker compose up -d
+```
+
+**3. Frontend em container**
+
+O frontend sobe junto e fica em **http://localhost:3000**. O backend em http://localhost:8080.
+
+**4. Frontend local (npm) + backend em Docker**
+
+Se preferir rodar o frontend com `npm run dev` (hot reload) e o resto em Docker:
+
+No **backend**:
+
+```bash
+docker compose -f docker-compose.backend-only.yml up -d
+```
+
+Neste repositório (frontend):
+
+```bash
+npm install
+echo "VITE_API_BASE_URL=http://localhost:8080/api" > .env
+npm run dev
+```
+
+Frontend: http://localhost:3000 | Backend API: http://localhost:8080
+
+**URLs úteis**
+
+| Serviço      | URL                         |
+|--------------|-----------------------------|
+| Frontend     | http://localhost:3000        |
+| Backend API  | http://localhost:8080        |
+| Grafana      | http://localhost:3001       |
+| Prometheus   | http://localhost:9090       |
+
+Mais detalhes: [Backend – Desenvolvimento Local](https://github.com/raphaelmoraes/pucrs-tcc-digital-step-flow-backend/blob/main/docs/local-development.md) e [docs/local-development.md](./docs/local-development.md).
 
 ### Como desenvolver o frontend (sem Docker)
 
