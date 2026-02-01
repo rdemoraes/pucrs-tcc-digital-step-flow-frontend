@@ -53,7 +53,7 @@ docker compose up -d
 
 **3. Frontend em container**
 
-O frontend sobe junto e fica em **http://localhost:3000**. O backend em http://localhost:8080.
+O frontend sobe junto e fica em **http://localhost:3000**; o backend (API) em **http://localhost:8080**. As portas seguem a convenção usual: frontend em 3000 (React, Next.js, Vite) e API em 8080.
 
 **4. Frontend local (npm) + backend em Docker**
 
@@ -83,6 +83,8 @@ Frontend: http://localhost:3000 | Backend API: http://localhost:8080
 | Backend API  | http://localhost:8080        |
 | Grafana      | http://localhost:3001       |
 | Prometheus   | http://localhost:9090       |
+
+Convenção de portas: frontend (UI) em 3000, backend (API) em 8080, conforme o padrão adotado na indústria.
 
 Mais detalhes: [Backend – Desenvolvimento Local](https://github.com/raphaelmoraes/pucrs-tcc-digital-step-flow-backend/blob/main/docs/local-development.md) e [docs/local-development.md](./docs/local-development.md).
 
