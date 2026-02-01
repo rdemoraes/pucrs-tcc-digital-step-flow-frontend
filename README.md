@@ -11,6 +11,15 @@ Frontend React da plataforma Digital Step Flow.
 - Tailwind CSS para estilização
 - React Hook Form + Zod para validação
 
+## Imagens de contêiner
+
+A imagem Docker do frontend é construída com práticas voltadas à segurança, utilizando **imagem base reforçada (hardened image)**. O Dockerfile usa a imagem base de workloads Node.js 24 (`raphaelmoraes/digital-step-flow-base-node`), que por sua vez é derivada do [Alpine Base](https://hub.docker.com/hardened-images/catalog/dhi/alpine-base) do catálogo Docker Hardened Images (`dhi.io/alpine-base`), com o objetivo de reduzir a superfície de ataque e aumentar a confiabilidade da aplicação.
+
+- **Imagem da aplicação:** construída a partir da imagem base de workload Node.js 24 (hardened). Detalhes de construção e publicação: repositório [pucrs-tcc-digital-step-flow-base-image](https://github.com/raphaelmoraes/pucrs-tcc-digital-step-flow-base-image) (workload `workload/node-24/`).
+- **CI/CD:** os jobs de deploy no GitHub Actions (atualização de manifests Kubernetes) rodam no container **CI/CD Runner** (`raphaelmoraes/digital-step-flow-cicd-runner`), que também é construído a partir da imagem hardened Alpine Base e reúne as ferramentas necessárias para CI/CD (kubectl, kustomize, Docker CLI, Trivy, etc.). Detalhes: repositório base-image, diretório `cicd-runner/`.
+
+Os detalhes técnicos de construção, versionamento e publicação das imagens base estão documentados no repositório de base images e neste repositório (Build Docker, GitHub Actions).
+
 ## Desenvolvimento Local
 
 ### Docker Compose (backend + frontend + Postgres + Redis + observabilidade)
@@ -19,7 +28,16 @@ O Docker Compose fica no repositório do **backend** e sobe backend, frontend, P
 
 **Pré-requisitos:** Docker e Docker Compose instalados. Ter os dois repositórios (backend e frontend) clonados.
 
-**1. Estrutura de pastas**
+**1. Autenticar no registro de imagens (Docker login)**
+
+Antes de baixar imagens da solução ou subir o compose, faça login no registro onde as imagens estão publicadas (ex.: Docker Hub para `raphaelmoraes/*`). No repositório do **backend**, execute:
+
+```bash
+docker login
+# Se usar imagens em dhi.io: docker login dhi.io
+```
+
+**2. Estrutura de pastas**
 
 Clone o **frontend** ao lado do **backend** (mesmo diretório pai):
 
@@ -32,7 +50,7 @@ git clone <url-do-repo-frontend> pucrs-tcc-digital-step-flow-frontend
 # ~/git/pucrs-tcc-digital-step-flow-frontend/
 ```
 
-**2. Subir a stack completa**
+**3. Subir a stack completa**
 
 No repositório do **backend** (não no frontend):
 
@@ -42,11 +60,11 @@ cp env.example .env   # opcional
 docker compose up -d
 ```
 
-**3. Frontend em container**
+**4. Frontend em container**
 
-O frontend sobe junto e fica em **http://localhost:3000**. O backend em http://localhost:8080.
+O frontend sobe junto e fica em **http://localhost:3000**; o backend (API) em **http://localhost:8080**. As portas seguem a convenção usual: frontend em 3000 (React, Next.js, Vite) e API em 8080.
 
-**4. Frontend local (npm) + backend em Docker**
+**5. Frontend local (npm) + backend em Docker**
 
 Se preferir rodar o frontend com `npm run dev` (hot reload) e o resto em Docker:
 
@@ -74,6 +92,8 @@ Frontend: http://localhost:3000 | Backend API: http://localhost:8080
 | Backend API  | http://localhost:8080        |
 | Grafana      | http://localhost:3001       |
 | Prometheus   | http://localhost:9090       |
+
+Convenção de portas: frontend (UI) em 3000, backend (API) em 8080, conforme o padrão adotado na indústria.
 
 Mais detalhes: [Backend – Desenvolvimento Local](https://github.com/raphaelmoraes/pucrs-tcc-digital-step-flow-backend/blob/main/docs/local-development.md) e [docs/local-development.md](./docs/local-development.md).
 
