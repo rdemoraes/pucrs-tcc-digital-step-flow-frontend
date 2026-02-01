@@ -28,7 +28,16 @@ O Docker Compose fica no repositório do **backend** e sobe backend, frontend, P
 
 **Pré-requisitos:** Docker e Docker Compose instalados. Ter os dois repositórios (backend e frontend) clonados.
 
-**1. Estrutura de pastas**
+**1. Autenticar no registro de imagens (Docker login)**
+
+Antes de baixar imagens da solução ou subir o compose, faça login no registro onde as imagens estão publicadas (ex.: Docker Hub para `raphaelmoraes/*`). No repositório do **backend**, execute:
+
+```bash
+docker login
+# Se usar imagens em dhi.io: docker login dhi.io
+```
+
+**2. Estrutura de pastas**
 
 Clone o **frontend** ao lado do **backend** (mesmo diretório pai):
 
@@ -41,7 +50,7 @@ git clone <url-do-repo-frontend> pucrs-tcc-digital-step-flow-frontend
 # ~/git/pucrs-tcc-digital-step-flow-frontend/
 ```
 
-**2. Subir a stack completa**
+**3. Subir a stack completa**
 
 No repositório do **backend** (não no frontend):
 
@@ -51,11 +60,11 @@ cp env.example .env   # opcional
 docker compose up -d
 ```
 
-**3. Frontend em container**
+**4. Frontend em container**
 
 O frontend sobe junto e fica em **http://localhost:3000**; o backend (API) em **http://localhost:8080**. As portas seguem a convenção usual: frontend em 3000 (React, Next.js, Vite) e API em 8080.
 
-**4. Frontend local (npm) + backend em Docker**
+**5. Frontend local (npm) + backend em Docker**
 
 Se preferir rodar o frontend com `npm run dev` (hot reload) e o resto em Docker:
 
