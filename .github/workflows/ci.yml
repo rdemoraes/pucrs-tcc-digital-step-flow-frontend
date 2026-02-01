@@ -18,8 +18,8 @@ env:
   DOCKER_HUB_USERNAME: raphaelmoraes
   BASE_IMAGE: raphaelmoraes/digital-step-flow-base-node
   FRONTEND_IMAGE: raphaelmoraes/digital-step-flow-frontend
-  NODEJS_VERSION: 24.13.0-r1
-  NPM_VERSION: 11.6.3-r1
+  NODEJS_VERSION: '24.13.0-r1'
+  NPM_VERSION: '11.6.3-r1'
 
 jobs:
   lint:
@@ -28,10 +28,18 @@ jobs:
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
       
+      - name: Extract Node.js version (major.minor.patch)
+        id: node_version
+        run: |
+          # Extract only major.minor.patch from version (e.g., 24.13.0-r1 -> 24.13.0)
+          NODE_VERSION=$(echo "${{ env.NODEJS_VERSION }}" | sed 's/-.*//')
+          echo "version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "Using Node.js version: ${NODE_VERSION}"
+      
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '24.13.0'
+          node-version: ${{ steps.node_version.outputs.version }}
           cache: 'npm'
       
       - name: Install dependencies
@@ -40,69 +48,10 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-  test:
-    name: Test Frontend
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24.13.0'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Run tests
-        run: npm run test:coverage
-      
-      - name: Upload coverage
-        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238
-        with:
-          files: ./coverage/coverage-final.json
-          flags: frontend
-
-  quality-gate-infra:
-    name: Quality Gate - Infrastructure (K8s, ArgoCD)
-    runs-on: ubuntu-latest
-    needs: [lint, test]
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-        with:
-          fetch-depth: 0  # Full history for repository linters
-      
-      - name: Run MegaLinter for Infrastructure
-        uses: oxsecurity/megalinter@bacb5f8674e3730b904ca4d20c8bd477bc51b1a7
-        env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: false
-          APPLY_FIXES: none
-          # Only include infrastructure files
-          FILTER_REGEX_INCLUDE: (k8s/|argocd/|docker-compose\.yml|Dockerfile|\.dockerignore)
-          # Enable infrastructure-focused descriptors
-          ENABLE: YAML,DOCKER
-          # Explicitly enable only the repository linters we need
-          ENABLE_LINTERS: REPOSITORY_KICS,REPOSITORY_CHECKOV,REPOSITORY_TRIVY
-          # Disable all other linters
-          DISABLE: COPYPASTE,SPELL,JAVASCRIPT,TYPESCRIPT,JSON,MARKDOWN,BASH,REPOSITORY_DEVSKIM,REPOSITORY_GITLEAKS,REPOSITORY_TRUFFLEHOG,REPOSITORY_GRYPE,REPOSITORY_SECRETLINT,REPOSITORY_DUSTILOCK,REPOSITORY_SYFT,REPOSITORY_TRIVY_SBOM,REPOSITORY_GIT_DIFF
-          # Skip specific Checkov checks
-          REPOSITORY_CHECKOV_SKIP_CHECK: CKV_K8S_43,CKV2_K8S_6,CKV2_GHA_1
-          # Exclude LOW and INFO severity findings from KICS
-          REPOSITORY_KICS_ARGUMENTS: "--exclude-severities info,low --exclude-paths .github/workflows/ci.yml"
-          # Make yamllint non-blocking (warnings only)
-          DISABLE_ERRORS_LINTERS: YAML
-          FILTER_REGEX_EXCLUDE: (node_modules|\.git|dist|build|coverage|\.next|\.cache)
-          LOG_LEVEL: INFO
-          PRINT_ALL_FILES: true
-          SHOW_ELAPSED_TIME: true
-
   quality-gate-code:
     name: Quality Gate - Source Code
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: [lint]
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
@@ -127,10 +76,112 @@ jobs:
           PRINT_ALL_FILES: true
           SHOW_ELAPSED_TIME: true
 
-  build:
-    name: Build Frontend Image
+  quality-gate-infra:
+    name: Quality Gate - Infra Code
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0  # Full history for repository linters
+      
+      - name: Run MegaLinter for Infrastructure
+        uses: oxsecurity/megalinter@bacb5f8674e3730b904ca4d20c8bd477bc51b1a7
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          APPLY_FIXES: none
+          # Only include infrastructure files
+          FILTER_REGEX_INCLUDE: (k8s/|argocd/|docker-compose\.yml|Dockerfile|\.dockerignore)
+          # Enable infrastructure-focused descriptors
+          ENABLE: YAML,DOCKER
+          # Explicitly enable only the repository linters we need (DevSkim disabled: XML parse errors, DS162092 flags intentional localhost)
+          ENABLE_LINTERS: REPOSITORY_KICS,REPOSITORY_CHECKOV,REPOSITORY_TRIVY
+          DISABLE_LINTERS: REPOSITORY_DEVSKIM
+          # Disable all other linters
+          DISABLE: COPYPASTE,SPELL,JAVASCRIPT,TYPESCRIPT,JSON,MARKDOWN,BASH,REPOSITORY_GITLEAKS,REPOSITORY_TRUFFLEHOG,REPOSITORY_GRYPE,REPOSITORY_SECRETLINT,REPOSITORY_DUSTILOCK,REPOSITORY_SYFT,REPOSITORY_TRIVY_SBOM,REPOSITORY_GIT_DIFF
+          # Skip specific Checkov checks
+          REPOSITORY_CHECKOV_SKIP_CHECK: CKV_K8S_43,CKV2_K8S_6,CKV2_GHA_1
+          # Exclude LOW and INFO severity findings from KICS
+          REPOSITORY_KICS_ARGUMENTS: "--exclude-severities info,low --exclude-paths .github/workflows/*.yml"
+          # Make yamllint non-blocking (warnings only)
+          DISABLE_ERRORS_LINTERS: YAML
+          FILTER_REGEX_EXCLUDE: (node_modules|\.git|dist|build|coverage|\.next|\.cache)
+          LOG_LEVEL: INFO
+          PRINT_ALL_FILES: true
+          SHOW_ELAPSED_TIME: true
+
+  test-unit:
+    name: Test - Unit
     runs-on: ubuntu-latest
     needs: [quality-gate-infra, quality-gate-code]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      
+      - name: Extract Node.js version (major.minor.patch)
+        id: node_version
+        run: |
+          # Extract only major.minor.patch from version (e.g., 24.13.0-r1 -> 24.13.0)
+          NODE_VERSION=$(echo "${{ env.NODEJS_VERSION }}" | sed 's/-.*//')
+          echo "version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "Using Node.js version: ${NODE_VERSION}"
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ steps.node_version.outputs.version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run unit tests
+        run: npm run test:unit:coverage
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238
+        with:
+          files: ./coverage/coverage-final.json
+          flags: frontend-unit
+
+  test-component:
+    name: Test - Components
+    runs-on: ubuntu-latest
+    needs: [quality-gate-infra, quality-gate-code]
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      
+      - name: Extract Node.js version (major.minor.patch)
+        id: node_version
+        run: |
+          # Extract only major.minor.patch from version (e.g., 24.13.0-r1 -> 24.13.0)
+          NODE_VERSION=$(echo "${{ env.NODEJS_VERSION }}" | sed 's/-.*//')
+          echo "version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "Using Node.js version: ${NODE_VERSION}"
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: ${{ steps.node_version.outputs.version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run component tests
+        run: npm run test:component:coverage
+      
+      - name: Upload coverage
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238
+        with:
+          files: ./coverage/coverage-final.json
+          flags: frontend-components
+
+  build:
+    name: Build Container Image
+    needs: [test-unit, test-component]
+    runs-on: ubuntu-latest
     # checkov:skip=CKV2_GHA_1: Permissions are specific (contents:write for tags, id-token:write for OIDC), not write-all
     permissions:
       contents: write  # Required to create tags
@@ -189,9 +240,41 @@ jobs:
             frontend.args.FRONTEND_IMAGE_VERSION=${{ steps.version.outputs.version }}
             frontend.tags=${{ env.FRONTEND_IMAGE }}:${{ steps.version.outputs.version }}
       
-      - name: Pull image for scanning
+      - name: Output image version
+        run: |
+          echo "IMAGE_VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_ENV
+          echo "Built image: ${{ env.FRONTEND_IMAGE }}:${{ steps.version.outputs.version }}"
+
+  trivy-scan:
+    name: Trivy Vulnerability Scan
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      
+      - name: Determine version based on branch strategy
+        id: version
+        env:
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_HEAD_REF: ${{ github.event.head_ref }}
+          GITHUB_EVENT_PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          source scripts/version.sh
+          determine_version \
+            "$GITHUB_REF_TYPE" \
+            "$GITHUB_REF" \
+            "$GITHUB_HEAD_REF" \
+            "$GITHUB_EVENT_PULL_REQUEST_HEAD_REF" \
+            "$GITHUB_REF_NAME"
+      
+      - name: Log in to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_PAT }}" | docker login -u "${{ secrets.DOCKERHUB_USER }}" --password-stdin
+      
+      - name: Pull image for scanning
+        run: |
           docker pull ${{ env.FRONTEND_IMAGE }}:${{ steps.version.outputs.version }}
       
       - name: Run Trivy vulnerability scanner
@@ -275,6 +358,77 @@ jobs:
             cat ./outerr_json.log >&2
           fi
       
+      - name: Generate Trivy Report Summary
+        if: always()
+        env:
+          IMAGE_REF: ${{ env.FRONTEND_IMAGE }}:${{ steps.version.outputs.version }}
+        run: |
+          echo "## Trivy Vulnerability Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ -f "trivy-image-frontend.json" ]]; then
+            # Parse JSON report to extract vulnerability counts
+            CRITICAL=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-image-frontend.json 2>/dev/null || echo "0")
+            HIGH=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-image-frontend.json 2>/dev/null || echo "0")
+            MEDIUM=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-image-frontend.json 2>/dev/null || echo "0")
+            LOW=$(jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity == "LOW")] | length' trivy-image-frontend.json 2>/dev/null || echo "0")
+            TOTAL=$((CRITICAL + HIGH + MEDIUM + LOW))
+            
+            # Get image details
+            IMAGE_NAME=$(jq -r '.ArtifactName // "unknown"' trivy-image-frontend.json 2>/dev/null || echo "${IMAGE_REF}")
+            IMAGE_TYPE=$(jq -r '.ArtifactType // "container"' trivy-image-frontend.json 2>/dev/null || echo "container")
+            
+            # Determine status emoji
+            if [[ ${CRITICAL} -gt 0 ]] || [[ ${HIGH} -gt 0 ]]; then
+              STATUS_EMOJI="❌"
+              STATUS="Failed"
+            elif [[ ${TOTAL} -eq 0 ]]; then
+              STATUS_EMOJI="✅"
+              STATUS="Clean"
+            else
+              STATUS_EMOJI="⚠️"
+              STATUS="Warnings"
+            fi
+            
+            echo "### Scan Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Target | Type | Status | Critical | High | Medium | Low | Total |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|------|--------|----------|------|--------|-----|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| \`${IMAGE_REF}\` | ${IMAGE_TYPE} | ${STATUS_EMOJI} ${STATUS} | **${CRITICAL}** | **${HIGH}** | ${MEDIUM} | ${LOW} | ${TOTAL} |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [[ ${TOTAL} -eq 0 ]]; then
+              echo "✅ **No vulnerabilities detected**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "### Vulnerability Breakdown" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              if [[ ${CRITICAL} -gt 0 ]]; then
+                echo "- 🔴 **Critical:** ${CRITICAL}" >> $GITHUB_STEP_SUMMARY
+              fi
+              if [[ ${HIGH} -gt 0 ]]; then
+                echo "- 🟠 **High:** ${HIGH}" >> $GITHUB_STEP_SUMMARY
+              fi
+              if [[ ${MEDIUM} -gt 0 ]]; then
+                echo "- 🟡 **Medium:** ${MEDIUM}" >> $GITHUB_STEP_SUMMARY
+              fi
+              if [[ ${LOW} -gt 0 ]]; then
+                echo "- 🟢 **Low:** ${LOW}" >> $GITHUB_STEP_SUMMARY
+              fi
+            fi
+            
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Reports" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Detailed reports are available in the workflow artifacts:" >> $GITHUB_STEP_SUMMARY
+            echo "- 📄 [HTML Report](artifact://trivy-reports-frontend/trivy-image-frontend.html)" >> $GITHUB_STEP_SUMMARY
+            echo "- 📊 [JSON Report](artifact://trivy-reports-frontend/trivy-image-frontend.json)" >> $GITHUB_STEP_SUMMARY
+            echo "- 📋 [XML Report (JUnit)](artifact://trivy-reports-frontend/trivy-image-frontend.xml)" >> $GITHUB_STEP_SUMMARY
+            echo "- 📦 [SBOM (CycloneDX)](artifact://trivy-reports-frontend/trivy-image-frontend-sbom.json)" >> $GITHUB_STEP_SUMMARY
+            echo "- 📝 [Text Summary](artifact://trivy-reports-frontend/trivy-image-frontend.txt)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Warning:** JSON report not found. Unable to generate summary." >> $GITHUB_STEP_SUMMARY
+          fi
+      
       - name: Upload Trivy reports
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -288,3 +442,77 @@ jobs:
             trivy-image-frontend-sbom.json
           retention-days: 30
 
+  deploy-dev:
+    name: Deploy to Dev (update k8s manifests)
+    needs: [trivy-scan]
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    container:
+      image: raphaelmoraes/digital-step-flow-cicd-runner:0.0.1
+      options: --user root
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine version based on branch strategy
+        id: version
+        shell: bash
+        env:
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_HEAD_REF: ${{ github.event.head_ref }}
+          GITHUB_EVENT_PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          source scripts/version.sh
+          determine_version \
+            "$GITHUB_REF_TYPE" \
+            "$GITHUB_REF" \
+            "$GITHUB_HEAD_REF" \
+            "$GITHUB_EVENT_PULL_REQUEST_HEAD_REF" \
+            "$GITHUB_REF_NAME"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Clone k8s repository
+        run: |
+          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/pucrs-tcc-digital-step-flow-frontend-k8s.git k8s-repo
+
+      - name: Setup k8s repository for dev
+        working-directory: ./k8s-repo
+        run: |
+          git fetch --tags
+          git checkout develop
+
+      - name: Update frontend image in kustomization
+        working-directory: ./k8s-repo/k8s/dev
+        run: |
+          NEW_IMAGE="${{ env.FRONTEND_IMAGE }}:${{ steps.version.outputs.version }}"
+          echo "Updating dev frontend image to ${NEW_IMAGE}"
+          /usr/local/bin/kustomize edit set image frontend=${NEW_IMAGE}
+
+      - name: Check for changes
+        id: changes
+        working-directory: ./k8s-repo
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            git status --short
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.has_changes == 'true'
+        working-directory: ./k8s-repo
+        run: |
+          git add k8s/dev/kustomization.yaml
+          git commit -m "chore: update dev image tag to ${{ steps.version.outputs.version }} [skip ci]"
+          git push origin develop
