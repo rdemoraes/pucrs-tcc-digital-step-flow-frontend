@@ -107,6 +107,7 @@ flowchart LR
     D --> F[Build Container Image]
     E --> F
     F --> G[Trivy Vulnerability Scan]
+    G --> H[Deploy to Dev]
   end
 ```
 
@@ -119,11 +120,12 @@ flowchart LR
 | **Test - Components** | Testes de componentes com cobertura; upload para Codecov. |
 | **Build Container Image** | Determina versão (branch/tag), build e push da imagem Docker. |
 | **Trivy Vulnerability Scan** | Escaneia a imagem construída (CRITICAL/HIGH). |
+| **Deploy to Dev** | Só em push para `develop`: atualiza manifests k8s de dev com a nova tag. |
 
 ### CD (Deploy)
 
-- **CD Deploy DEV** (`cd-deploy-dev.yml`): dispara após o CI concluir em `develop`; atualiza manifests Kubernetes (dev) com a nova tag da imagem.
-- **CD Deploy PROD** (`cd-deploy-prod.yml`): para deploys de produção (ex.: tag ou manual).
+- **Deploy to Dev:** job `deploy-dev` dentro do próprio `ci.yml`; roda apenas em push para `develop` (após Trivy) e atualiza os manifests Kubernetes de dev com a nova tag da imagem.
+- **CD Deploy PROD** (`cd-deploy-prod.yml`): workflow dedicado para deploys de produção (ex.: tag ou manual).
 
 ## Documentação
 
