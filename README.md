@@ -13,7 +13,9 @@ Frontend React da plataforma Digital Step Flow.
 
 ## Desenvolvimento Local
 
-### Como desenvolver o frontend
+Para **desenvolvimento com Docker Compose** (backend + frontend + Postgres + Redis + Prometheus, Grafana, Loki, Tempo), use o compose do repositório do **backend**: clone este repo ao lado do backend e execute `docker compose up -d` no backend. Detalhes em [Backend – Desenvolvimento Local](https://github.com/raphaelmoraes/pucrs-tcc-digital-step-flow-backend/blob/main/docs/local-development.md) e em [docs/local-development.md](./docs/local-development.md).
+
+### Como desenvolver o frontend (sem Docker)
 
 1. **Pré-requisitos:** Node.js v24.13.0, npm 11.6.3. Opcional: Docker.
 2. **Instale dependências e suba o servidor de desenvolvimento:**
