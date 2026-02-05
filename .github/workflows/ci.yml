@@ -481,12 +481,19 @@ jobs:
           git fetch --tags
           git checkout develop
 
+      - name: Install Kustomize
+        run: |
+          KUSTOMIZE_VERSION=5.4.2
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar -xz -C /usr/local/bin
+          chmod +x /usr/local/bin/kustomize
+          kustomize version
+
       - name: Update frontend image in kustomization
         working-directory: ./k8s-repo/k8s/dev
         run: |
           NEW_IMAGE="${{ env.FRONTEND_IMAGE }}:${{ needs.build.outputs.version }}"
           echo "Updating dev frontend image to ${NEW_IMAGE}"
-          /usr/local/bin/kustomize edit set image frontend=${NEW_IMAGE}
+          kustomize edit set image frontend=${NEW_IMAGE}
 
       - name: Check for changes
         id: changes
